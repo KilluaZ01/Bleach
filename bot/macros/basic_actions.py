@@ -35,3 +35,4 @@ def input_macro(adb_address, name):
     """
     input_command = f'adb -s {adb_address} shell input text "{name}"'
     os.system(input_command)
+

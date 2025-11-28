@@ -36,15 +36,8 @@ class MainTab:
         
         ttk.Label(
             header_frame,
-            text="🎮 Chaos Zero Nightmare",
+            text="🎮 Bleach: Soul Resonance",
             font=("Segoe UI", 24, "bold"),
-            bootstyle="primary"
-        ).pack()
-        
-        ttk.Label(
-            header_frame,
-            text="VMOS Cloud Device Automation System",
-            font=("Segoe UI", 10),
             bootstyle="secondary"
         ).pack()
         
@@ -191,18 +184,6 @@ class MainTab:
         )
         self.cycles_entry.insert(0, "1")
         self.cycles_entry.pack(side=RIGHT)
-        
-        # Info label
-        info_frame = ttk.Frame(parent)
-        info_frame.pack(fill=X, pady=(10, 0))
-        
-        ttk.Label(
-            info_frame,
-            text="ℹ️ Batch size = Number of selected devices | Each cycle runs automation on all selected devices",
-            font=("Segoe UI", 9),
-            bootstyle="secondary",
-            wraplength=500
-        ).pack()
     
     def _create_control_buttons(self):
         """Create modern control buttons"""

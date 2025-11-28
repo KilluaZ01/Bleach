@@ -66,47 +66,51 @@ class VMOSManager:
                         status_update_func(device_name, "Connection Failed")
                         success = False
                 
-                # Run automation on connected devices
-                for device_index, device in enumerate(connected_devices, 1):
-                    if not is_running_func():
-                        self.log("🛑 Automation stopped by user")
-                        break
-                    
-                    # Check if paused (FIXED LOGIC)
+                # Run automation on connected devices in parallel
+                if connected_devices:
+                    # Check if paused before starting parallel automation
                     while pause_event.is_set() and is_running_func():
                         self.log(f"⏸️ Automation paused, waiting to resume...")
-                        time.sleep(0.5)  # Slightly longer sleep for better responsiveness
+                        time.sleep(0.5)
                     
                     if not is_running_func():
                         self.log("🛑 Automation stopped by user")
-                        break
-                    
-                    device_name = device.get('name', 'Unknown')
-                    luck_key = device_luck_keys.get(device_name, "")
-                    
-                    self.log(f"🚀 Starting automation on device {device_index}/{len(connected_devices)}: {device_name}")
-                    if luck_key:
-                        self.log(f"🔑 [{device_name}] Using luck key: {luck_key}")
                     else:
-                        self.log(f"🚫 [{device_name}] No luck key available")
-                    
-                    status_update_func(device_name, "Running")
-                    
-                    try:
-                        # Use your existing game progression system
-                        self.device_automation.run_device_automation(
-                            device=device,
-                            guest_name=guest_name,
-                            luck_key=luck_key
+                        # Prepare luck keys for parallel automation
+                        luck_keys_dict = {device.get('name', 'Unknown'): device_luck_keys.get(device.get('name', 'Unknown'), "") for device in connected_devices}
+                        
+                        # Set all devices to "Running" status
+                        for device in connected_devices:
+                            device_name = device.get('name', 'Unknown')
+                            status_update_func(device_name, "Running")
+                        
+                        # Run synchronized automation (step-by-step coordination)
+                        automation_result = self.device_automation.run_synchronized_device_automation(
+                            devices=connected_devices,
+                            guest_names=guest_name,  # Same guest name for all devices
+                            luck_keys=luck_keys_dict,
+                            pause_event=pause_event  # Pass the pause event for proper pause control
                         )
                         
-                        status_update_func(device_name, "Completed")
-                        self.log(f"✅ Completed device: {device_name}")
+                        # Update status based on results
+                        if automation_result['success']:
+                            self.log(f"🎯 All {automation_result['total']} devices completed successfully!")
+                        else:
+                            self.log(f"⚠️ {automation_result['failed']} out of {automation_result['total']} devices failed")
+                            if automation_result['failed'] > 0:
+                                success = False
                         
-                    except Exception as e:
-                        status_update_func(device_name, "Error")
-                        self.log(f"❌ Error on device {device_name}: {e}")
-                        success = False
+                        # Update individual device statuses
+                        for i, result in automation_result['results'].items():
+                            device_name = result['device']
+                            if result['success']:
+                                status_update_func(device_name, "Completed")
+                                self.log(f"✅ [{device_name}] Completed successfully")
+                            else:
+                                status_update_func(device_name, "Error")
+                                self.log(f"❌ [{device_name}] Failed: {result['error']}")
+                else:
+                    self.log("⚠️ No devices connected for automation")
                 
                 # Disconnect devices after cycle
                 for device in connected_devices:

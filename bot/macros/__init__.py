@@ -1,12 +1,14 @@
 """Macro actions for game automation"""
 
 from .basic_actions import tap_macro, swipe_macro, input_macro
+
+from .fight_actions import basic_attack_combo, basic_attack_combo_dodge
+
 from .game_actions import (
     launch_game,
     quit_game,
     open_game,
     open_luck,
-    tap_if_regular_summon,
 )
 
 __all__ = [
@@ -17,5 +19,6 @@ __all__ = [
     'quit_game',
     'open_game',
     'open_luck',
-    'tap_if_regular_summon',
+    'basic_attack_combo',
+    'basic_attack_combo_dodge',
 ]

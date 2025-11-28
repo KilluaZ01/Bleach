@@ -17,7 +17,7 @@ class BotGUI(ttk.Window):
         super().__init__(
             title="Silver and Blood Bot",
             themename="darkly",  # Modern dark theme
-            size=(900, 700),
+            size=(900, 800),
             resizable=(True, True)
         )
         

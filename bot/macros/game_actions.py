@@ -98,21 +98,10 @@ def open_game(adb_address, *args):
     """
     os.system(f'adb -s {adb_address} shell monkey -p {PACKAGE_NAME} -c android.intent.category.LAUNCHER 1')
 
-def tap_if_regular_summon(adb_address, *args):
-    """Check for regular summon banner and tap if found
+def uninstall_game(adb_address, *args):
+    """Uninstall the game application
     
     Args:
         adb_address: ADB address of the device
     """
-    from .basic_actions import tap_macro
-    
-    template_path = f"{MAIN_PATH}templates/regular_summon_template.png"
-    print(f"[{adb_address}] 📸 Taking screenshot to detect regular summon...")
-
-    match_coords = find_coordinates(adb_address, template_path)
-    if match_coords:
-        x, y = match_coords
-        print(f"[{adb_address}] 🎯 Found regular summon at ({x}, {y}) — tapping")
-        tap_macro(adb_address, x, y)
-    else:
-        print(f"[{adb_address}] ❌ Could not find regular summon banner")
+    os.system(f'adb -s {adb_address} uninstall {PACKAGE_NAME}')
