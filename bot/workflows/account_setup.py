@@ -4,7 +4,7 @@ import os
 from datetime import datetime
 
 from utils.file_manager import save_account_metadata, backup_account_data
-from utils.screenshot_utils import check_template
+from utils.screenshot_utils import check_template, take_screenshot
 from utils.paths import SCREENSHOT_DIR_FINAL, TEMPLATE_DIR, SCREENSHOT_DIR
 
 from macros.game_actions import quit_game
@@ -31,6 +31,9 @@ def validate_accounts(guest_data, log_func):
 
         if check_template(adb_address, template_path, final_dir, threshold=0.80):
             log_func(f"[{adb_address}] ✅ Successfully reached login reward screen.")
+
+            guest_filename = f"{guest_name}_{datetime.now().strftime('%M%S')}"
+            take_screenshot(adb_address, final_dir, guest_filename)
 
             # Backup account data
             success, backup_filename = backup_account_data(adb_address, guest_name, log_func)
@@ -64,8 +67,5 @@ def validate_accounts(guest_data, log_func):
                         os.remove(os.path.join(SCREENSHOT_DIR_FINAL, day_file))
                     except Exception as e:
                         pass
-
-            quit_game(adb_address)
-            time.sleep(5)
 
     return valid_instances, valid_guest_names

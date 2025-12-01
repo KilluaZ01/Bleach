@@ -49,15 +49,17 @@ def check_template(adb_address, template_path, DIR=None, threshold=0.8):
     result = cv2.matchTemplate(img, template, cv2.TM_CCOEFF_NORMED)
     _, max_val, _, _ = cv2.minMaxLoc(result)
     
+    print(f"Template match value: {max_val} for template {template_path}")
+    
     time.sleep(random.uniform(0.05, 0.15))
 
-    try:
-        if os.path.exists(screenshot_path):
-            os.remove(screenshot_path)
-    except PermissionError:
-        pass  # File is locked or already deleted by another thread
-    except Exception as e:
-        print(f"Warning: Could not delete {screenshot_path}: {e}")
+    # try:
+    #     if os.path.exists(screenshot_path):
+    #         os.remove(screenshot_path)
+    # except PermissionError:
+    #     pass  # File is locked or already deleted by another thread
+    # except Exception as e:
+    #     print(f"Warning: Could not delete {screenshot_path}: {e}")
 
     return max_val >= threshold
 
@@ -76,6 +78,8 @@ def find_coordinates(adb_address, template_path, threshold=0.8):
 
     result = cv2.matchTemplate(img, template, cv2.TM_CCOEFF_NORMED)
     _, max_val, _, max_loc = cv2.minMaxLoc(result)
+
+    print(f"Template match value: {max_val} for template {template_path}")
 
     time.sleep(random.uniform(0.05, 0.15))
 

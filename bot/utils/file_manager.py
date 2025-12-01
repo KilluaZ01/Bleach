@@ -80,11 +80,11 @@ def save_account_metadata(account):
 
     print(f"✅ Account metadata saved for {account['instance_name']}")
 
-def backup_account_data(instance_name, guest_name, log_func):
+def backup_account_data(adb_address, guest_name, log_func):
     """Create and save account backup
     
     Args:
-        instance_name: Name of the instance
+        adb_address: ADB address of the device
         guest_name: Guest account name
         log_func: Logging function
         
@@ -95,41 +95,40 @@ def backup_account_data(instance_name, guest_name, log_func):
     os.makedirs(account_dir, exist_ok=True)
 
     safe_guest = guest_name
-    safe_inst = instance_name
-    ts = datetime.now().strftime("%Y%m%d_%H%M%S")
+    ts = datetime.now().strftime("%M%S")
 
-    backup_filename = f"{safe_guest}_{safe_inst}_{ts}.tar.gz"
+    backup_filename = f"{safe_guest}_{ts}.tar.gz"
     backup_path = os.path.join(account_dir, backup_filename)
 
     # Create tar backup
-    make_tar_cmd = (
-        f'ldconsole.exe adb --name "{instance_name}" '
-        f'--command "shell su -c \'cd /data/data && '
-        f'tar -czf /sdcard/{backup_filename} com.smilegate.chaoszero.stove.google\'"'
-    )
+    # make_tar_cmd = (
+    #     f'ldconsole.exe adb --name "{instance_name}" '
+    #     f'--command "shell su -c \'cd /data/data && '
+    #     f'tar -czf /sdcard/{backup_filename} com.smilegate.chaoszero.stove.google\'"'
+    # )
     
-    pull_tar_cmd = (
-        f'ldconsole.exe adb --name "{instance_name}" '
-        f'--command "pull /sdcard/{backup_filename} {backup_path}"'
-    )
+    # pull_tar_cmd = (
+    #     f'ldconsole.exe adb --name "{instance_name}" '
+    #     f'--command "pull /sdcard/{backup_filename} {backup_path}"'
+    # )
     
-    clean_tar_cmd = (
-        f'ldconsole.exe adb --name "{instance_name}" '
-        f'--command "shell rm /sdcard/{backup_filename}"'
-    )
+    # clean_tar_cmd = (
+    #     f'ldconsole.exe adb --name "{instance_name}" '
+    #     f'--command "shell rm /sdcard/{backup_filename}"'
+    # )
 
-    r1 = subprocess.run(make_tar_cmd, shell=True)
-    if r1.returncode != 0:
-        log_func(f"[{instance_name}] ❌ Failed to create internal backup tar.")
-        return False, None
+    # r1 = subprocess.run(make_tar_cmd, shell=True)
+    # if r1.returncode != 0:
+    #     log_func(f"[{instance_name}] ❌ Failed to create internal backup tar.")
+    #     return False, None
     
-    r2 = subprocess.run(pull_tar_cmd, shell=True)
-    if r2.returncode != 0:
-        log_func(f"[{instance_name}] ❌ Failed to pull backup from device.")
-        return False, None
+    # r2 = subprocess.run(pull_tar_cmd, shell=True)
+    # if r2.returncode != 0:
+    #     log_func(f"[{instance_name}] ❌ Failed to pull backup from device.")
+    #     return False, None
     
-    subprocess.run(clean_tar_cmd, shell=True)
-    log_func(f"[{instance_name}] 💾 Saved internal backup -> {backup_path}")
+    # subprocess.run(clean_tar_cmd, shell=True)
+    # log_func(f"[{instance_name}] 💾 Saved internal backup -> {backup_path}")
     
     return True, backup_filename
 

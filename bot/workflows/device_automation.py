@@ -4,6 +4,9 @@ import subprocess
 import time
 import threading
 
+from bot.utils.screenshot_utils import take_screenshot
+from workflows.opencv_logics import final_screenshot
+
 from utils.file_manager import push_assets
 
 from macros.game_actions import launch_game, uninstall_game
@@ -55,7 +58,9 @@ class VMOSDeviceAutomation:
                 pause_event=pause_event
             )
 
-            validate_accounts(guest_data, lambda msg: self.log(f"[{device_name}] {msg}"))
+            final_screenshot(adb_address)
+
+            # validate_accounts(guest_data, lambda msg: self.log(f"[{device_name}] {msg}"))
             
             self.log(f"🎯 [{device_name}] Game automation completed successfully")
             
